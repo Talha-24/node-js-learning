@@ -1,0 +1,232 @@
+import cors from "cors"
+import express from "express"
+import {mongoose as MongoDB} from "mongoose"
+const app = express();
+
+// MiddleWare
+app.use(express.json());
+
+// DB CONNECTION
+MongoDB.connect("mongodb://localhost:27017/CarRentalSystem")
+  .then(() => console.log("DataBase is connected Successfully"))
+  .catch(() => console.log("Error in connection with DB"));
+
+// SCHEMAS
+
+const OwnerSchema = new MongoDB.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    phone: { type: String, required: true },
+    cnic: { type: String, required: true, unique: true },
+  },
+  { timestamps: true }
+);
+const Owner = MongoDB.model("Owner", OwnerSchema);
+const CarSchema = new MongoDB.Schema(
+  {
+    owner_id: {
+      type: MongoDB.Schema.Types.ObjectId,
+      ref: "Owner",
+      required: true,
+    },
+    model: { type: String, required: true },
+    plate_number: { type: String, required: true, unique: true },
+    rent_price_per_day: { type: Number, required: true },
+  },
+  { timestamps: true }
+);
+
+const Car = MongoDB.model("Car", CarSchema);
+
+const TenantSchema = new MongoDB.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    phone: { type: String, required: true },
+    rented_car: { type: MongoDB.Schema.Types.ObjectId, ref: "Car" },
+  },
+  { timestamps: true }
+);
+
+const Tenant = MongoDB.model("Tenant", TenantSchema);
+
+// ----------Dealing with Owner (CRUD)
+
+//1- Owner (Create)
+app.post("/owners", async (req, res) => {
+  const { name, email, phone, cnic } = req.body;
+  const owner = await Owner.create({ name, email, phone, cnic });
+
+  return res.json(owner);
+});
+
+
+//2-Owner (Read-All)
+
+app.get("/owners",async(req,res)=>{
+
+  // Token Validation
+
+  const all_owners=await Owner.find();
+
+  return res.json({success:true, message: "Owners are retrieved sucessfully", data: all_owners});
+
+})
+
+
+
+//3- Owner (Read-On)
+
+
+app.get("/owners/:id",async (req,res)=>{
+  console.log('req.params',req.params)
+  const id=req.params.id;
+  const owner=await Owner.findById(id);
+
+  return res.json({success:true, message: "Owner is retrieved successfully",data:owner});
+})
+
+// 4-Owner ( Delete-one)
+
+app.delete("/owners/:id",async(req,res)=>{
+  const id=req.params.id;
+  const deleted_owner=await Owner.findByIdAndDelete(id);
+  return res.json({success:true, message: "Owner is deleted successfully",data:deleted_owner});
+})
+
+
+// 5-Owner (Updated-one);
+
+app.put("/owners/:id",async(req,res)=>{
+  const id=req.params.id;
+  const {name,email,phone,cnic}=req.body;
+
+  const new_user=await Owner.findByIdAndUpdate(id,{name,email,phone,cnic},{
+    new:true,
+    runValidators:true,
+  });
+  return res.json({success:true, message: "Owner is updated successfully",data:new_user})
+})
+
+
+
+
+//------------Car (CRUD)
+
+
+app.post("/cars",async(req,res)=>{
+
+  const {model,plate_number,rent_price_per_day,owner_id}=req.body;
+
+  const new_car=await Car.create({model,plate_number,rent_price_per_day,owner_id});
+
+  return res.json({success:true, message: "Car is created successfully",data:new_car});
+})
+
+
+// Car (Read-All)
+app.get("/cars",async(req,res)=>{
+
+  const all_cars=await Car.find();
+  return res.json({ success:true ,message: "Cars are retrieved successfully",data:all_cars});
+})
+
+
+
+// Car (Read-One)
+
+app.get("/cars/:id",async(req,res)=>{
+  const id=req.params.id;
+  const single_car=await Car.findById(id);
+  return res.json({success:true, message: "Car is retrieved successfully ", data:single_car})
+})
+
+
+// Car (Update-one)
+
+app.put("/cars/:id",async(req,res)=>{
+  const id=req.params.id;
+
+  const {model,owner_id,rent_price_per_day,plate_number}=req.body;
+  const updated_car=await Car.findByIdAndUpdate(id,{model,owner_id,rent_price_per_day,plate_number},{
+   new:true,
+   runValidators:true,
+  });
+
+  return res.json({success:true, message: "Car is updated successfully",data:updated_car});
+})
+
+
+// Car (Deleted-one)
+
+app.delete("/cars/:id",async(req,res)=>{
+
+  const id=req.params.id;
+  const deleted_car=await Car.findByIdAndDelete(id);
+
+  return res.json({success:true, message: "Car is deleted successfully",data:deleted_car});
+})
+
+
+
+
+//--------- Tenate (CRUD)
+//-Create
+
+app.post("/tenants",async(req,res)=>{
+  const {name,email,phone,rented_car}=req.body;
+
+  const created_tenant=await Tenant.create({name,email,phone,rented_car});
+  return res.json({success:true, message: "Tenant is created successfully",data:created_tenant});
+})
+
+
+// Tenant ( read-all)
+
+app.get("/tenants",async(req,res)=>{
+  
+  const all_tenants=await Tenant.find();
+  return res.json({success:true, message: "Tenants are retrieved successfully",data:all_tenants})
+})
+
+
+// Tenant (read-one)
+
+app.get("/tenants/:id",async(req,res)=>{
+  const id=req.params.id;
+  const single_tenants=await Tenant.findById(id);
+  return res.json({success:true, message: "Tenants is retrieved successfully",data:single_tenants})
+})
+
+
+// Tenant (update-one)
+
+app.put("/tenants/:id",async(req,res)=>{
+  const id=req.params.id;
+
+  const {name,email,phone,rented_car}=req.body;
+  const updated_tenant=await Tenant.findByIdAndUpdate(id,{name,email,phone,rented_car},{
+    new:true,
+    runValidators:true,
+  });
+
+  return res.json({success:true, message: "Tenant is updated successfully",data:updated_tenant});
+
+})
+
+
+// Tenant (Delete)
+
+app.delete("/tenants/:id",async(req,res)=>{
+  const id=req.params.id;
+  
+  const deleted_tenant=await Tenant.findByIdAndDelete(id);
+
+  return res.json({success:true, message: "Tenant is deleted scucessfully",data:deleted_tenant})
+})
+
+
+
+const PORT = 4000;
+app.listen(PORT, () => console.log("Server is running on port " + PORT));
