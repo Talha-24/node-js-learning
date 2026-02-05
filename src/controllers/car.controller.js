@@ -1,6 +1,13 @@
 import Car from "../models/cars.schema.js";
 
+
+
+
 export const readAllCars = async (req, res) => {
+
+  
+  
+
   const all_cars = await Car.find().populate("owner_id");
 
   return res.json({
@@ -11,6 +18,7 @@ export const readAllCars = async (req, res) => {
 };
 
 export const createCar = async (req, res) => {
+  
   const { model, plate_number, rent_price_per_day, owner_id } = req.body;
 
   const new_car = await Car.create({

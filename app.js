@@ -4,6 +4,7 @@ import MongoDBConnector from "./src/db/index.js";
 import carRoutes from "./src/routes/cars.routes.js";
 import ownerRoutes from "./src/routes/owner.routes.js";
 import tenantRoutes from "./src/routes/tenants.routes.js";
+import authRoutes from "./src/routes/auth.routes.js"
 const app = express();
 
 // MiddleWare
@@ -22,7 +23,7 @@ MongoDBConnector();
 app.use("/owners",ownerRoutes);
 app.use("/cars",carRoutes)
 app.use("/tenants",tenantRoutes);
-
+app.use("/api/auth",authRoutes);
 
 const PORT = 4000;
 app.listen(PORT, () => console.log("Server is running on port " + PORT));
