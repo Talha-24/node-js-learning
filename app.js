@@ -12,7 +12,10 @@ const app = express();
 app.use(express.json());
 
 // DB CONNECTION
-
+app.use(cors({
+    origin:process.env.FRONTEND_URL,
+    credentials:true
+}))
 
 // MongoDB.connect("mongodb://localhost:27017").then(()=>console.log("DataBase is connected")).catch(()=>console.log("Error in connecting to "))
 
