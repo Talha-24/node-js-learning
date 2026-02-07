@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 const UserSchema = new mongoose.Schema({
-  name: String,
-  phone: String,
-  email:String,
+  name: String, //
+  phone: String, //
+  email:String, //
   token:String,
-  image: String,
-  total_ads:String,
-  location:String,
-  password:{type:String,required:true},
+  image: String, //
+  total_ads:String, 
+  location:String, 
+  password:{type:String,required:true}, //
   is_token_valid: {type:Boolean, false : false},
 },
   { timestamps: true }
