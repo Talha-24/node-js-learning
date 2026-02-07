@@ -1,20 +1,29 @@
 import jwt from "jsonwebtoken";
+import User from "../models/user.schema.js"; 
 
-export async function authMiddleware(req,res){
+export async function authMiddleware(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
 
+  if (!token) {
+    return res.status(401).json({ success: false, message: "No Token Provided!" });
+  }
 
-const token = req.headers['Authorization'];
-const secretKey = "SECRET"; // Wahi key jo token banate waqt use ki thi
+  try {
+    const secretKey = "SECRET"; 
+    const decoded = jwt.verify(token, secretKey);
 
-try {
-  // Yeh function check karega ke token genuine hai aur use decode karega
-  const decoded = jwt.verify(token, secretKey);
-  
-  
-  console.log("Decoded User ID:", decoded.userId);
-  console.log("Decoded Email:", decoded.email);
-} catch (err) {
-  // Agar token expired hai ya galat hai toh error yahan aayega
-  console.error("Token verification failed:", err.message);
-}
+    const user = await User.findById(decoded.userId).select("-password"); 
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User does not exists in database" });
+    }
+
+    req.user = user; 
+    
+    next(); 
+  } catch (err) {
+    console.error("Auth Error:", err.message);
+    res.status(403).json({ success: false, message: "Token expire ho gaya ya invalid hai." });
+  }
 }
