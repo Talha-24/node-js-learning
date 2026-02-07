@@ -4,7 +4,8 @@ import MongoDBConnector from "./src/db/index.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import productRoutes from "./src/routes/products.routes.js"
 import { authMiddleware } from "./src/middlewares/middleware.js";
-
+import dotenv from "dotenv"
+dotenv.config();
 
 const app = express();
 
@@ -28,7 +29,7 @@ MongoDBConnector();
 // app.use("/cars",carRoutes)
 // app.use("/tenants",tenantRoutes);
 app.use("/api/auth",authRoutes);
-app.use("/app/products",authMiddleware,productRoutes);
+app.use("/api/products",authMiddleware,productRoutes);
 
 
 const PORT = 4000;
