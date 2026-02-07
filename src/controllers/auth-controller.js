@@ -67,6 +67,7 @@ export const createUserAccount = async (req, res) => {
 
     return res.status(201).json({
       success: true,
+      manualToken,
       message: "Account is created successfully",
     });
 
