@@ -1,10 +1,11 @@
 import cors from "cors"
 import express from "express"
 import MongoDBConnector from "./src/db/index.js";
-import carRoutes from "./src/routes/cars.routes.js";
-import ownerRoutes from "./src/routes/owner.routes.js";
-import tenantRoutes from "./src/routes/tenants.routes.js";
-import authRoutes from "./src/routes/auth.routes.js"
+import authRoutes from "./src/routes/auth.routes.js";
+import productRoutes from "./src/routes/products.routes.js"
+import { authMiddleware } from "./src/middlewares/middleware.js";
+
+
 const app = express();
 
 // MiddleWare
@@ -20,10 +21,14 @@ MongoDBConnector();
 
 // ----------Dealing with Owner (CRUD)
 
-app.use("/owners",ownerRoutes);
-app.use("/cars",carRoutes)
-app.use("/tenants",tenantRoutes);
+// app.use("/owners",ownerRoutes);
+// app.use("/cars",carRoutes)
+// app.use("/tenants",tenantRoutes);
 app.use("/api/auth",authRoutes);
+app.use("/app/products",authMiddleware,productRoutes);
+
 
 const PORT = 4000;
+
+
 app.listen(PORT, () => console.log("Server is running on port " + PORT));
