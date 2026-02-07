@@ -14,7 +14,7 @@ export const createUserAccount = async (req, res) => {
 
   if (isEmailPresent) {
     return res.json({
-      success: true,
+      success: false,
       message: "Email already exists",
     });
   }
