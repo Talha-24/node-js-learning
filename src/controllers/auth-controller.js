@@ -54,7 +54,7 @@ export const createUserAccount = async (req, res) => {
         <h1>Welcome ${name}!</h1>
         <p>Thank you for registering. Please use the token below to verify your account:</p>
         <div style="background: #f4f4f4; padding: 10px; border: 1px solid #ddd;">
-          <strong> <a href="${process.env.FRONT_END_URL}/email-verification?token=${manualToken}"> ${process.env.FRONT_END_URL}?token=${manualToken} </a></strong>
+          <strong> <a href="${process.env.FRONT_END_URL}/email-verification?token=${manualToken}"> ${process.env.FRONT_END_URL}?email-verification?token=${manualToken} </a></strong>
         </div>
         <p>If you didn't request this, please ignore this email.</p>
       `,
